@@ -7,8 +7,9 @@ COPY ./requirements.txt .
 RUN pip install -r ./requirements.txt
 
 COPY . .
-ENV FLASK_ENV production
+# ENV FLASK_ENV production
 
 EXPOSE 5000
 
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "api:app"]
+# CMD ["gunicorn", "-b", "0.0.0.0:5000", "api:app"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
