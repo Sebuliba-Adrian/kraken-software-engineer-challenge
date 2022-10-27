@@ -3,12 +3,16 @@ from flask import Flask, jsonify, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_marshmallow import Marshmallow
+from flask_cors import CORS, cross_origin
 
 
 import os
 
 app = Flask(__name__)
+cors = CORS(app)
+
 app.config["SECRET_KEY"] = "my secret"
+app.config["CORS_HEADERS"] = "Content-Type"
 app.config[
     "SQLALCHEMY_DATABASE_URI"
 ] = f"postgresql://postgres:{os.environ['POSTGRES_PASSWORD']}@postgres:5432/{os.environ['POSTGRES_DB']}"
@@ -98,12 +102,14 @@ class Application(db.Model):
 
 
 @app.route("/api/apps", methods=["GET"])
+@cross_origin()
 def get_apps():
     apps = [app.to_dict() for app in db.session.query(Application).all()]
     return jsonify(apps)
 
 
 @app.route("/api/apps", methods=["POST"])
+@cross_origin()
 def create_app():
     body = request.get_json()
     db.session.add(
@@ -122,12 +128,14 @@ def create_app():
 
 
 @app.route("/api/apps/<int:id>", methods=["GET"])
+@cross_origin()
 def get_app(id):
     app = Application.query.get(id)
     return jsonify({"data": app.to_dict()})
 
 
 @app.route("/api/apps/<int:id>", methods=["PUT"])
+@cross_origin()
 def update_app(id):
     body = request.get_json()
     db.session.query(Application).filter_by(id=id).update(
@@ -146,6 +154,7 @@ def update_app(id):
 
 
 @app.route("/api/apps/<int:id>", methods=["DELETE"])
+@cross_origin()
 def delete_app(id):
     db.session.query(Application).filter_by(id=id).delete()
     db.session.commit()
@@ -153,6 +162,7 @@ def delete_app(id):
 
 
 @app.route("/api/apps/<int:id>/dependencies/<int:dependency_id>", methods=["POST"])
+@cross_origin()
 def add_app_dependencies(id, dependency_id):
     app = Application.query.get(id)
     dep_app = Application.query.get(dependency_id)
@@ -166,6 +176,7 @@ def add_app_dependencies(id, dependency_id):
 
 
 @app.route("/api/apps/<int:id>/dependencies", methods=["GET"])
+@cross_origin()
 def get_app_dependencies(id):
     app = Application.query.get(id)
 
@@ -173,6 +184,7 @@ def get_app_dependencies(id):
 
 
 @app.route("/api/apps/<int:id>/dependencies/<int:dependency_id>", methods=["DELETE"])
+@cross_origin()
 def delete_app_dependency(id, dependency_id):
     app = Application.query.get(id)
     dep_app = Application.query.get(dependency_id)
