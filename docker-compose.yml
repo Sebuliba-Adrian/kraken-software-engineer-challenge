@@ -1,8 +1,18 @@
 version: '3.9'
 
 services:
+    frontend:
+      build:
+        context: .
+        dockerfile: Dockerfile.frontend
+      image: frontend-app
+      ports:
+        - "3000:80"
+    
     meta_app:
-       build: .
+       build:
+         context: .
+         dockerfile: Dockerfile.backend
        restart: always
        ports:
            - "80:5000"
